@@ -1,0 +1,17 @@
+# Go binary files
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Build artifacts
+*.out
+
+# IDE/editor files
+.vscode/
+.idea/
+
+# Logs
+*.log
+
