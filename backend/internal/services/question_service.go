@@ -17,10 +17,10 @@ func NewQuestionService(repo repositories.QuestionRepository) *QuestionServiceIm
 	}
 }
 
-func (s *QuestionServiceImpl) GetAllQuestionsPaginated(ctx context.Context, page int, limit int) ([]interface{}, error) {
-	baseQuestions, err := s.repo.GetAllQuestionsPaginated(ctx, page, limit)
+func (s *QuestionServiceImpl) GetAllQuestionsPaginated(ctx context.Context, page int, limit int) ([]interface{}, *repositories.PageMetaData, error) {
+	baseQuestions, pageMetaData, err := s.repo.GetAllQuestionsPaginated(ctx, page, limit)
 	if err != nil {
-		return nil, err
+		return nil, &repositories.PageMetaData{}, err
 	}
 
 	// Group questions by type
@@ -39,12 +39,12 @@ func (s *QuestionServiceImpl) GetAllQuestionsPaginated(ctx context.Context, page
 	// Fetch details for each type
 	mcqDetails, err := s.repo.GetMCQDetails(ctx, mcqIDs)
 	if err != nil {
-		return nil, err
+		return nil, &repositories.PageMetaData{}, err
 	}
 
 	anagramDetails, err := s.repo.GetAnagramDetails(ctx, anagramIDs)
 	if err != nil {
-		return nil, err
+		return nil, &repositories.PageMetaData{}, err
 	}
 
 	// Combine base questions with details
@@ -73,13 +73,13 @@ func (s *QuestionServiceImpl) GetAllQuestionsPaginated(ctx context.Context, page
 			result = append(result, question)
 		}
 	}
-	return result, nil
+	return result, pageMetaData, nil
 }
 
-func (s *QuestionServiceImpl) SearchQuestionsTitleDyRegex(ctx context.Context, search_term string, page int, limit int) ([]interface{}, error) {
-	baseQuestions, err := s.repo.SearchQuestionsTitleDyRegex(ctx, search_term, page, limit)
+func (s *QuestionServiceImpl) SearchQuestionsTitleDyRegex(ctx context.Context, search_term string, page int, limit int) ([]interface{}, *repositories.PageMetaData, error) {
+	baseQuestions, pageMetaData, err := s.repo.SearchQuestionsTitleDyRegex(ctx, search_term, page, limit)
 	if err != nil {
-		return nil, err
+		return nil, &repositories.PageMetaData{}, err
 	}
 
 	// Group questions by type
@@ -98,12 +98,12 @@ func (s *QuestionServiceImpl) SearchQuestionsTitleDyRegex(ctx context.Context, s
 	// Fetch details for each type
 	mcqDetails, err := s.repo.GetMCQDetails(ctx, mcqIDs)
 	if err != nil {
-		return nil, err
+		return nil, &repositories.PageMetaData{}, err
 	}
 
 	anagramDetails, err := s.repo.GetAnagramDetails(ctx, anagramIDs)
 	if err != nil {
-		return nil, err
+		return nil, &repositories.PageMetaData{}, err
 	}
 
 	// Combine base questions with details
@@ -132,6 +132,6 @@ func (s *QuestionServiceImpl) SearchQuestionsTitleDyRegex(ctx context.Context, s
 			result = append(result, question)
 		}
 	}
-	return result, nil
+	return result, pageMetaData, nil
 
 }

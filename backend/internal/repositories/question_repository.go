@@ -23,7 +23,7 @@ func NewMongoQuestionRepository(db *mongo.Database, collectionName string) *Mong
 	}
 }
 
-func (r *MongoQuestionRepository) GetAllQuestionsPaginated(ctx context.Context, page int, limit int) ([]models.BaseQuestion, error) {
+func (r *MongoQuestionRepository) GetAllQuestionsPaginated(ctx context.Context, page int, limit int) ([]models.BaseQuestion, *PageMetaData, error) {
 	skip := (page - 1) * limit
 	findOptions := options.Find()
 	findOptions.SetSkip(int64(skip))
@@ -33,20 +33,30 @@ func (r *MongoQuestionRepository) GetAllQuestionsPaginated(ctx context.Context, 
 
 	cursor, err := r.collection.Find(ctx, bson.M{}, findOptions)
 	if err != nil {
-		return nil, err
+		return nil, &PageMetaData{}, err
 	}
 	defer cursor.Close(ctx)
+
+	totalResults, err := r.collection.CountDocuments(ctx, bson.M{})
+	if err != nil {
+		return nil, &PageMetaData{}, err
+	}
 
 	// decode the cursor to questions
 	err = cursor.All(ctx, &questions)
 	if err != nil {
-		return nil, err
+		return nil, &PageMetaData{}, err
 	}
 
-	return questions, nil
+	totalPages := (int(totalResults) + limit - 1) / limit // ceil division
+
+	return questions, &PageMetaData{
+		TotalResults: int(totalResults),
+		TotalPages:   totalPages,
+	}, nil
 }
 
-func (r *MongoQuestionRepository) SearchQuestionsTitleDyRegex(ctx context.Context, search_term string, page int, limit int) ([]models.BaseQuestion, error) {
+func (r *MongoQuestionRepository) SearchQuestionsTitleDyRegex(ctx context.Context, search_term string, page int, limit int) ([]models.BaseQuestion, *PageMetaData, error) {
 
 	searchRegex := buildTypoTolerantRegex(search_term)
 	fmt.Println("generated regex for search_term", searchRegex)
@@ -65,18 +75,28 @@ func (r *MongoQuestionRepository) SearchQuestionsTitleDyRegex(ctx context.Contex
 
 	cursor, err := r.collection.Find(ctx, filter, findOptions)
 	if err != nil {
-		return nil, err
+		return nil, &PageMetaData{}, err
 	}
 	defer cursor.Close(ctx)
+
+	totalResults, err := r.collection.CountDocuments(ctx, filter)
+	if err != nil {
+		return nil, &PageMetaData{}, err
+	}
 
 	var questions []models.BaseQuestion
 
 	// decode the cursor to questions
 	if err = cursor.All(ctx, &questions); err != nil {
-		return nil, err
+		return nil, &PageMetaData{}, err
 	}
 
-	return questions, nil
+	totalPages := (int(totalResults) + limit - 1) / limit // ceil division
+
+	return questions, &PageMetaData{
+		TotalResults: int(totalResults),
+		TotalPages:   totalPages,
+	}, nil
 }
 
 // get mcqType typed questions from ad id slice of them

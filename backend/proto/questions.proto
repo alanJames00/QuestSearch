@@ -75,6 +75,8 @@ message GetQuestionsRequest {
 
 message GetQuestionsResponse {
 	repeated Question questions = 1;
+	int32 totalQuestions = 2;
+	int32 totalPages = 3;
 }
 
 message GetQuestionByIdRequest {
