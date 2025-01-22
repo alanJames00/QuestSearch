@@ -59,8 +59,18 @@ func (s *QuestionServiceImpl) GetAllQuestionsPaginated(ctx context.Context, page
 			if anagram, exists := anagramDetails[question.ID]; exists {
 				result = append(result, anagram)
 			}
+		case "CONVERSATION":
+			conversation := repositories.ConvertToConversation(question)
+			result = append(result, conversation)
+		case "READ_ALONG":
+			readalong := repositories.ConvertToReadAlong(question)
+			result = append(result, readalong)
+		case "CONTENT_ONLY":
+			contentonly := repositories.ConvertToContentOnly(question)
+			result = append(result, contentonly)
+
 		default:
-			result = append(result, question) // Return base question for unsupported types
+			result = append(result, question)
 		}
 	}
 	return result, nil

@@ -91,3 +91,30 @@ func (r *MongoQuestionRepository) GetAnagramDetails(ctx context.Context, ids []p
 	return anagramMap, nil
 
 }
+
+func ConvertToContentOnly(baseQuestion models.BaseQuestion) models.ContentOnly {
+	return models.ContentOnly{
+		ID:        baseQuestion.ID,
+		Type:      baseQuestion.Type,
+		Title:     baseQuestion.Title,
+		SiblingID: baseQuestion.SiblingID,
+	}
+}
+
+func ConvertToReadAlong(baseQuestion models.BaseQuestion) models.ReadAlong {
+	return models.ReadAlong{
+		ID:        baseQuestion.ID,
+		Type:      baseQuestion.Type,
+		Title:     baseQuestion.Title,
+		SiblingID: baseQuestion.SiblingID,
+	}
+}
+
+func ConvertToConversation(baseQuestion models.BaseQuestion) models.Conversation {
+	return models.Conversation{
+		ID:        baseQuestion.ID,
+		Type:      baseQuestion.Type,
+		Title:     baseQuestion.Title,
+		SiblingID: baseQuestion.SiblingID,
+	}
+}
