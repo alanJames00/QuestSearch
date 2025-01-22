@@ -1,0 +1,88 @@
+syntax = "proto3";
+
+package questions;
+
+option go_package = "./pb/question;question";
+
+// import any type for dynamic fields
+import "google/protobuf/any.proto";
+
+// Base message type for all question types
+
+
+// Block structure for Anagram Type questions
+message Block {
+	string text = 1;
+	bool show_in_option = 2;
+	bool is_answer = 3;
+}
+
+// Option structure for MCQ Type questions
+message Option {
+	string text = 1;
+	bool is_correct_answer = 2;
+}
+
+// ContentOnly Question structure
+message ContentOnlyQuestion {
+}
+
+message ConversationQuestion {
+}
+
+message AnagramQuestion {
+
+	string anagram_type = 1;
+	repeated Block blocks = 2;
+	string solution = 3;
+}
+
+message MCQQuestion {
+
+	repeated Option options = 1;	
+}
+
+message ReadAlongQuestion {
+}
+
+message Question{
+	string id = 1;
+    string type = 2;
+    string title = 3;
+    string sibling_id = 4;
+
+
+	oneof question_details {
+        ContentOnlyQuestion content_only = 5;
+        ConversationQuestion conversation = 6;
+        AnagramQuestion anagram = 7;
+        MCQQuestion mcq = 8;
+        ReadAlongQuestion read_along = 9;
+    }
+}
+// Service defs
+service QuestionService {
+	// get all questions
+	rpc GetQuestions(GetQuestionsRequest) returns (GetQuestionsResponse);
+
+	// get a question by id
+	rpc GetQuestionById(GetQuestionByIdRequest) returns (GetQuestionByIdResponse);
+}
+
+// request to get questions
+message GetQuestionsRequest {
+	int32 page = 1;
+	int32 limit = 2;
+}
+
+message GetQuestionsResponse {
+	repeated Question questions = 1;
+}
+
+message GetQuestionByIdRequest {
+	string id = 1;
+}
+
+message GetQuestionByIdResponse {
+	Question question = 1;
+}
