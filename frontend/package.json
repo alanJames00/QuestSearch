@@ -7,9 +7,12 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "run-proto-loader": "./node_modules/.bin/proto-loader-gen-types --longs=String --enums=String --defaults --oneofs --grpcLib=@grpc/grpc-js --outDir=./src/api/grpc/proto/ ./src/api/grpc/proto/question.proto"
   },
   "dependencies": {
+    "@grpc/proto-loader": "^0.7.13",
+    "grpc-web": "^1.5.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
