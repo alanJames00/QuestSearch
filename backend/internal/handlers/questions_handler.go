@@ -2,8 +2,8 @@
 package handlers
 
 import (
-	"fmt"
 	"context"
+	"fmt"
 	"questsearch/internal/formatters"
 	"questsearch/proto/pb/question"
 )
@@ -27,7 +27,7 @@ func (h *GrpcQuestionHandler) GetQuestions(ctx context.Context, req *question.Ge
 	// Use the formatter service to handle the request and format the response
 	fmt.Printf("Received GetQuestions request: Page=%d, Limit=%d\n", req.Page, req.Limit)
 
-	resp, err := h.formatterService.FormatQuestionsToGrpc(ctx, req)
+	resp, err := h.formatterService.GetAllQuestionsPaginated(ctx, req)
 	if err != nil {
 		fmt.Printf("Error formatting questions: %v\n", err)
 		return nil, err
@@ -36,18 +36,29 @@ func (h *GrpcQuestionHandler) GetQuestions(ctx context.Context, req *question.Ge
 	return resp, nil
 }
 
-// TODO: 
+// TODO:
 func (h *GrpcQuestionHandler) GetQuestionById(ctx context.Context, req *question.GetQuestionByIdRequest) (*question.GetQuestionByIdResponse, error) {
 	fmt.Printf("Received GetQuestionById request: Id = %s\n", string(req.Id))
 
 	resp := &question.GetQuestionByIdResponse{
 		Question: &question.Question{
-			Id: "1234",
-			Type: "TODO",
-			Title: "todo title",
+			Id:        "1234",
+			Type:      "TODO",
+			Title:     "todo title",
 			SiblingId: "todo SiblingId",
-		},	
+		},
 	}
 
 	return resp, nil
-} 
+}
+
+func (h *GrpcQuestionHandler) SearchQuestion(ctx context.Context, req *question.SearchQuestionRequest) (*question.GetQuestionsResponse, error) {
+	fmt.Printf("Received SearchQuestion request: search_term = %s page = %d limit = %d\n", req.SearchTerm, req.Page, req.Limit)
+
+	resp, err := h.formatterService.SearchQuestionsTitleDyRegex(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}

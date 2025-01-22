@@ -4,11 +4,6 @@ package questions;
 
 option go_package = "./pb/question;question";
 
-// import any type for dynamic fields
-import "google/protobuf/any.proto";
-
-// Base message type for all question types
-
 
 // Block structure for Anagram Type questions
 message Block {
@@ -67,6 +62,9 @@ service QuestionService {
 
 	// get a question by id
 	rpc GetQuestionById(GetQuestionByIdRequest) returns (GetQuestionByIdResponse);
+
+	// search a question with typo tolerance on title field
+	rpc SearchQuestion(SearchQuestionRequest) returns (GetQuestionsResponse);
 }
 
 // request to get questions
@@ -85,4 +83,10 @@ message GetQuestionByIdRequest {
 
 message GetQuestionByIdResponse {
 	Question question = 1;
+}
+
+message SearchQuestionRequest {
+	string search_term = 1;
+	int32 page = 2;
+	int32 limit = 3;
 }

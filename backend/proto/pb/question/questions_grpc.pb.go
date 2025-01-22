@@ -21,6 +21,7 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	QuestionService_GetQuestions_FullMethodName    = "/questions.QuestionService/GetQuestions"
 	QuestionService_GetQuestionById_FullMethodName = "/questions.QuestionService/GetQuestionById"
+	QuestionService_SearchQuestion_FullMethodName  = "/questions.QuestionService/SearchQuestion"
 )
 
 // QuestionServiceClient is the client API for QuestionService service.
@@ -33,6 +34,8 @@ type QuestionServiceClient interface {
 	GetQuestions(ctx context.Context, in *GetQuestionsRequest, opts ...grpc.CallOption) (*GetQuestionsResponse, error)
 	// get a question by id
 	GetQuestionById(ctx context.Context, in *GetQuestionByIdRequest, opts ...grpc.CallOption) (*GetQuestionByIdResponse, error)
+	// search a question with typo tolerance on title field
+	SearchQuestion(ctx context.Context, in *SearchQuestionRequest, opts ...grpc.CallOption) (*GetQuestionsResponse, error)
 }
 
 type questionServiceClient struct {
@@ -63,6 +66,16 @@ func (c *questionServiceClient) GetQuestionById(ctx context.Context, in *GetQues
 	return out, nil
 }
 
+func (c *questionServiceClient) SearchQuestion(ctx context.Context, in *SearchQuestionRequest, opts ...grpc.CallOption) (*GetQuestionsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetQuestionsResponse)
+	err := c.cc.Invoke(ctx, QuestionService_SearchQuestion_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QuestionServiceServer is the server API for QuestionService service.
 // All implementations must embed UnimplementedQuestionServiceServer
 // for forward compatibility.
@@ -73,6 +86,8 @@ type QuestionServiceServer interface {
 	GetQuestions(context.Context, *GetQuestionsRequest) (*GetQuestionsResponse, error)
 	// get a question by id
 	GetQuestionById(context.Context, *GetQuestionByIdRequest) (*GetQuestionByIdResponse, error)
+	// search a question with typo tolerance on title field
+	SearchQuestion(context.Context, *SearchQuestionRequest) (*GetQuestionsResponse, error)
 	mustEmbedUnimplementedQuestionServiceServer()
 }
 
@@ -88,6 +103,9 @@ func (UnimplementedQuestionServiceServer) GetQuestions(context.Context, *GetQues
 }
 func (UnimplementedQuestionServiceServer) GetQuestionById(context.Context, *GetQuestionByIdRequest) (*GetQuestionByIdResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetQuestionById not implemented")
+}
+func (UnimplementedQuestionServiceServer) SearchQuestion(context.Context, *SearchQuestionRequest) (*GetQuestionsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SearchQuestion not implemented")
 }
 func (UnimplementedQuestionServiceServer) mustEmbedUnimplementedQuestionServiceServer() {}
 func (UnimplementedQuestionServiceServer) testEmbeddedByValue()                         {}
@@ -146,6 +164,24 @@ func _QuestionService_GetQuestionById_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _QuestionService_SearchQuestion_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SearchQuestionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QuestionServiceServer).SearchQuestion(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: QuestionService_SearchQuestion_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QuestionServiceServer).SearchQuestion(ctx, req.(*SearchQuestionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // QuestionService_ServiceDesc is the grpc.ServiceDesc for QuestionService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -160,6 +196,10 @@ var QuestionService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetQuestionById",
 			Handler:    _QuestionService_GetQuestionById_Handler,
+		},
+		{
+			MethodName: "SearchQuestion",
+			Handler:    _QuestionService_SearchQuestion_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -3,6 +3,7 @@ package repositories
 
 import (
 	"context"
+	"fmt"
 	"questsearch/internal/models"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -44,6 +45,40 @@ func (r *MongoQuestionRepository) GetAllQuestionsPaginated(ctx context.Context, 
 
 	return questions, nil
 }
+
+func (r *MongoQuestionRepository) 	SearchQuestionsTitleDyRegex(ctx context.Context, search_term string, page int, limit int) ([]models.BaseQuestion, error) {
+
+	searchRegex := buildTypoTolerantRegex(search_term)
+	fmt.Println("generated regex for search_term", searchRegex)
+	
+	skip := (page - 1) * limit;
+	findOptions := options.Find()
+	findOptions.SetSkip(int64(skip))
+	findOptions.SetLimit(int64(limit))
+
+	filter := bson.M{
+		"title": bson.M{
+			"$regex": searchRegex,
+			"$options": "i", // for case insensitive
+		},
+	}
+
+	cursor, err := r.collection.Find(ctx, filter, findOptions)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	var questions []models.BaseQuestion
+
+	// decode the cursor to questions
+	if err = cursor.All(ctx, &questions); err != nil {
+		return nil, err
+	}
+
+	return questions, nil
+}
+
 
 // get mcqType typed questions from ad id slice of them
 func (r *MongoQuestionRepository) GetMCQDetails(ctx context.Context, ids []primitive.ObjectID) (map[primitive.ObjectID]models.MCQ, error) {
@@ -117,4 +152,15 @@ func ConvertToConversation(baseQuestion models.BaseQuestion) models.Conversation
 		Title:     baseQuestion.Title,
 		SiblingID: baseQuestion.SiblingID,
 	}
+}
+
+func buildTypoTolerantRegex(searchTerm string) string {
+	var regex string
+	
+	// allow each char of searchTerm or its absence
+	for _, char := range searchTerm {
+		regex += fmt.Sprintf("[%c]?.", char)	
+	}
+
+	return regex
 }

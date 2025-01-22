@@ -19,12 +19,28 @@ func NewGrpcFormatterService(service services.QuestionService) *GrpcFormatterSer
 }
 
 // formats generic []interface{} result from service layer for grpc request response
-func (s *GrpcFormatterService) FormatQuestionsToGrpc(ctx context.Context, req *question.GetQuestionsRequest) (*question.GetQuestionsResponse, error) {
+func (s *GrpcFormatterService) GetAllQuestionsPaginated(ctx context.Context, req *question.GetQuestionsRequest) (*question.GetQuestionsResponse, error) {
 
 	questionSlice, err := s.service.GetAllQuestionsPaginated(ctx, int(req.Page), int(req.Limit))
 	if err != nil {
 		return nil, err
 	}
+
+	return formatQuestionsToGrpc(questionSlice)
+}
+
+func (s *GrpcFormatterService) SearchQuestionsTitleDyRegex(ctx context.Context, req *question.SearchQuestionRequest) (*question.GetQuestionsResponse, error) {
+
+	questionSlice, err := s.service.SearchQuestionsTitleDyRegex(ctx, req.SearchTerm, int(req.Page), int(req.Limit))
+	if err != nil {
+		return nil, err
+	}
+
+	return formatQuestionsToGrpc(questionSlice)
+}
+
+// generic private function to convert service results to grpc responses
+func formatQuestionsToGrpc(questionSlice []interface{}) (*question.GetQuestionsResponse, error) {
 
 	// prepare the grpc response slice
 	var grpcQuestions []*question.Question
