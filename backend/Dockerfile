@@ -1,21 +1,14 @@
 # build the backend using Builder container
-FROM golang:1.23.5 AS BUILDER
+FROM golang:1.23.5
 
 WORKDIR /app
 
 COPY . .
 
 RUN go mod tidy
-RUN go build -o backend .
+RUN go build -o backend ./cmd/server/main.go
 
-FROM alpine:latest
-
-RUN apk --no-cache add ca-certificates
-
-COPY --from=builder /app/backend /app/backend
-
-# Set the working directory
-WORKDIR /app
+# TODO: remove source code after build optional
 
 # Expose the port that the backend app runs on
 EXPOSE 8787
