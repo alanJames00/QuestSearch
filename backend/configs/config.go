@@ -12,7 +12,7 @@ type Config struct {
 func LoadConfig() *Config {
 	// get the params from current env
 	return &Config{
-		Addr: getEnv("PORT", ":8000"),
+		Addr: getEnv("PORT", ":8787"),
 		MongoURI: getEnv("MONGO_URI", "mongodb://localhost:27017"),
 		DBName: getEnv("DB_NAME", "test"),
 	}

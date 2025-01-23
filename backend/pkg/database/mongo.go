@@ -3,8 +3,8 @@ package database
 
 import (
 	"context"
-	"fmt"
 	"time"
+	"log"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -21,7 +21,7 @@ func ConnectToMongo(uri string) (*mongo.Client, error) {
 		return nil, err
 	}
 	
-	fmt.Println("connected to mongodb", uri)
+	log.Println("connected to mongodb", uri)
 	
 	return client, nil
 }

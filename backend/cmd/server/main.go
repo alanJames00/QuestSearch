@@ -44,23 +44,16 @@ func main() {
 	grpcServer := grpc.NewServer()
 	question.RegisterQuestionServiceServer(grpcServer, grpcQuestionHandler)
 
-
 	reflection.Register(grpcServer)
 
-	listener, err := net.Listen("tcp", ":50051")
+	listener, err := net.Listen("tcp", cfg.Addr)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	log.Println("grpc server starting on port 50051")
+	log.Printf("grpc server starting on Addr: %s\n", cfg.Addr)
 	if err = grpcServer.Serve(listener); err != nil {
 		log.Fatal("failed to serve grpc server", err)
 	}
 
-	// questions, err := svc.GetAllQuestionsWith(context.Background(), 1, 10)
-	// if err != nil {
-	// 	fmt.Println("error GetAllQuestionsPaginated", err)
-	// }
-	//
-	// fmt.Printf("%+v", questions)
 }
