@@ -18,7 +18,7 @@ function App() {
 	}
 
 	useEffect(() => {
-		getQuestions();
+		getQuestions(1, 10);
 	}, []);
 	return (
 		<div className="App">
