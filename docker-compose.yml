@@ -1,0 +1,64 @@
+version: "3.8"
+services:
+  mongodb:
+    image: mongodb/mongodb-community-server:latest
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    command: ["mongod", "--noauth"] # Disable authentication
+    networks:
+      - backend
+
+  mongo-importer:
+    image: mongo:latest
+    container_name: mongo-importer
+    depends_on:
+      - mongodb
+    volumes:
+      - ./data:/data
+    entrypoint: >
+      /bin/sh -c "
+        apt-get update && apt-get install -y netcat-traditional && \
+        while ! nc -z mongodb 27017; do
+          echo 'Waiting for MongoDB to start...';
+          sleep 2;
+        done;
+
+        mongoimport --host mongodb --db=questsearch --collection=questions --file=/data/speakx_questions.json --jsonArray --stopOnError;
+        exit 0;"
+    networks:
+      - backend
+
+  backend:
+    build:
+      context: ./backend # Point to the backend directory
+      dockerfile: Dockerfile # Specify the custom Dockerfile for the backend if required
+    container_name: backend
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/questsearch
+    ports:
+      - "8787:8787"
+    networks:
+      - backend
+
+  # envoy proxy server service
+  envoy:
+    image: envoyproxy/envoy:v1.22.0
+    container_name: envoy
+    depends_on:
+      - backend
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./envoy/envoy.yaml:/etc/envoy/envoy.yaml
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
+
+volumes:
+  mongodb_data:
