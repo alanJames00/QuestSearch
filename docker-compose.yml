@@ -48,6 +48,7 @@ services:
     container_name: backend
     environment:
       - MONGO_URI=mongodb://mongodb:27017/questsearch?directConnection=true
+      - DB_NAME=questsearch
     ports:
       - "8787:8787"
     networks:
