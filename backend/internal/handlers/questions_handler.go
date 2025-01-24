@@ -6,6 +6,9 @@ import (
 	"log"
 	"questsearch/internal/formatters"
 	"questsearch/proto/pb/question"
+
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 // GrpcQuestionHandler handles gRPC requests for questions
@@ -25,7 +28,30 @@ func NewGrpcHandler(formatter *formatters.GrpcFormatterService) *GrpcQuestionHan
 
 func (h *GrpcQuestionHandler) GetQuestions(ctx context.Context, req *question.GetQuestionsRequest) (*question.GetQuestionsResponse, error) {
 	// Use the formatter service to handle the request and format the response
-	log.Printf("Received GetQuestions request: Page=%d, Limit=%d\n", req.Page, req.Limit)
+	log.Printf("Received GetQuestions request: qType =%s Page=%d, Limit=%d\n", req.QType, req.Page, req.Limit)
+
+	// validate inputs
+	if (req.Page <= 0) || (req.Limit <= 0) {
+		return nil, status.Errorf(codes.InvalidArgument, "page and limit must be greater than 0")
+	}
+
+	// validate qType input
+	if req.QType != "" {
+		valid := false
+
+		validTypes := []string{"ALL", "ANAGRAM", "MCQ", "CONVERSATION", "CONTENT_ONLY", "READ_ALONG"}
+
+		for _, v := range validTypes {
+			if v == req.QType {
+				valid = true
+				break
+			}
+		}
+
+		if !valid {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid question type: %v", req.QType)
+		}
+	}
 
 	resp, err := h.formatterService.GetAllQuestionsPaginated(ctx, req)
 	if err != nil {
@@ -53,7 +79,30 @@ func (h *GrpcQuestionHandler) GetQuestionById(ctx context.Context, req *question
 }
 
 func (h *GrpcQuestionHandler) SearchQuestion(ctx context.Context, req *question.SearchQuestionRequest) (*question.GetQuestionsResponse, error) {
-	log.Printf("Received SearchQuestion request: search_term = %s page = %d limit = %d\n", req.SearchTerm, req.Page, req.Limit)
+	log.Printf("Received SearchQuestion request: search_term = %s qType = %s page = %d limit = %d\n", req.SearchTerm, req.QType, req.Page, req.Limit)
+
+	// validate inputs
+	if (req.Page <= 0) || (req.Limit <= 0) {
+		return nil, status.Errorf(codes.InvalidArgument, "page and limit must be greater than 0")
+	}
+
+	// validate qType input
+	if req.QType != "" {
+		valid := false
+
+		validTypes := []string{"ALL", "ANAGRAM", "MCQ", "CONVERSATION", "CONTENT_ONLY", "READ_ALONG"}
+
+		for _, v := range validTypes {
+			if v == req.QType {
+				valid = true
+				break
+			}
+		}
+
+		if !valid {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid question type: %v", req.QType)
+		}
+	}
 
 	resp, err := h.formatterService.SearchQuestionsTitleDyRegex(ctx, req)
 	if err != nil {

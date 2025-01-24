@@ -17,8 +17,8 @@ func NewQuestionService(repo repositories.QuestionRepository) *QuestionServiceIm
 	}
 }
 
-func (s *QuestionServiceImpl) GetAllQuestionsPaginated(ctx context.Context, page int, limit int) ([]interface{}, *repositories.PageMetaData, error) {
-	baseQuestions, pageMetaData, err := s.repo.GetAllQuestionsPaginated(ctx, page, limit)
+func (s *QuestionServiceImpl) GetAllQuestionsPaginated(ctx context.Context, qType string, page int, limit int) ([]interface{}, *repositories.PageMetaData, error) {
+	baseQuestions, pageMetaData, err := s.repo.GetAllQuestionsPaginated(ctx, qType, page, limit)
 	if err != nil {
 		return nil, &repositories.PageMetaData{}, err
 	}
@@ -76,8 +76,8 @@ func (s *QuestionServiceImpl) GetAllQuestionsPaginated(ctx context.Context, page
 	return result, pageMetaData, nil
 }
 
-func (s *QuestionServiceImpl) SearchQuestionsTitleDyRegex(ctx context.Context, search_term string, page int, limit int) ([]interface{}, *repositories.PageMetaData, error) {
-	baseQuestions, pageMetaData, err := s.repo.SearchQuestionsTitleDyRegex(ctx, search_term, page, limit)
+func (s *QuestionServiceImpl) SearchQuestionsTitleDyRegex(ctx context.Context, search_term string, qType string, page int, limit int) ([]interface{}, *repositories.PageMetaData, error) {
+	baseQuestions, pageMetaData, err := s.repo.SearchQuestionsTitleDyRegex(ctx, search_term, qType, page, limit)
 	if err != nil {
 		return nil, &repositories.PageMetaData{}, err
 	}

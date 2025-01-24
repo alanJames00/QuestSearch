@@ -69,8 +69,9 @@ service QuestionService {
 
 // request to get questions
 message GetQuestionsRequest {
-	int32 page = 1;
-	int32 limit = 2;
+	string q_type = 1;
+	int32 page = 2;
+	int32 limit = 3;
 }
 
 message GetQuestionsResponse {
@@ -89,6 +90,7 @@ message GetQuestionByIdResponse {
 
 message SearchQuestionRequest {
 	string search_term = 1;
-	int32 page = 2;
-	int32 limit = 3;
+	string q_type = 2;
+	int32 page = 3;
+	int32 limit = 4;
 }

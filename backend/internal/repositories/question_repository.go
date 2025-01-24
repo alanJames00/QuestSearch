@@ -23,15 +23,25 @@ func NewMongoQuestionRepository(db *mongo.Database, collectionName string) *Mong
 	}
 }
 
-func (r *MongoQuestionRepository) GetAllQuestionsPaginated(ctx context.Context, page int, limit int) ([]models.BaseQuestion, *PageMetaData, error) {
+func (r *MongoQuestionRepository) GetAllQuestionsPaginated(ctx context.Context, qType string, page int, limit int) ([]models.BaseQuestion, *PageMetaData, error) {
 	skip := (page - 1) * limit
 	findOptions := options.Find()
 	findOptions.SetSkip(int64(skip))
 	findOptions.SetLimit(int64(limit))
 
+	// build a query with filter using qType
+	query := bson.M{}
+
+	// get the qType and use it as filter
+	if qType != "" && qType != "ALL" {
+		query = bson.M{
+			"type": qType,
+		}
+	}
+
 	var questions []models.BaseQuestion
 
-	cursor, err := r.collection.Find(ctx, bson.M{}, findOptions)
+	cursor, err := r.collection.Find(ctx, query, findOptions)
 	if err != nil {
 		return nil, &PageMetaData{}, err
 	}
@@ -56,7 +66,7 @@ func (r *MongoQuestionRepository) GetAllQuestionsPaginated(ctx context.Context, 
 	}, nil
 }
 
-func (r *MongoQuestionRepository) SearchQuestionsTitleDyRegex(ctx context.Context, search_term string, page int, limit int) ([]models.BaseQuestion, *PageMetaData, error) {
+func (r *MongoQuestionRepository) SearchQuestionsTitleDyRegex(ctx context.Context, search_term string, qType string, page int, limit int) ([]models.BaseQuestion, *PageMetaData, error) {
 
 	searchRegex := buildTypoTolerantRegex(search_term)
 	fmt.Println("generated regex for search_term", searchRegex)
@@ -71,6 +81,16 @@ func (r *MongoQuestionRepository) SearchQuestionsTitleDyRegex(ctx context.Contex
 			"$regex":   searchRegex,
 			"$options": "i", // for case insensitive
 		},
+	}
+
+	if qType != "" && qType != "ALL" {
+		filter = bson.M{
+			"type": qType,
+			"title": bson.M{
+				"$regex":   searchRegex,
+				"$options": "i",
+			},
+		}
 	}
 
 	cursor, err := r.collection.Find(ctx, filter, findOptions)

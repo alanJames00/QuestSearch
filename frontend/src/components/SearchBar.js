@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 
-const SearchBar = ({ suggestionsEnabled = true }) => {
+const SearchBar = ({ suggestionsEnabled = true, onSearch }) => {
 	const [query, setQuery] = useState("");
 	const [suggestions, setSuggestions] = useState([]);
 	const [isFocused, setIsFocused] = useState(false);
 
-	// Mock data for suggestions
 	const mockSuggestions = [
 		"React",
 		"JavaScript",
@@ -19,7 +18,6 @@ const SearchBar = ({ suggestionsEnabled = true }) => {
 		"Svelte",
 	];
 
-	// Fetch suggestions based on the query
 	const fetchSuggestions = (query) => {
 		return new Promise((resolve) => {
 			setTimeout(() => {
@@ -63,9 +61,16 @@ const SearchBar = ({ suggestionsEnabled = true }) => {
 		setSuggestions([]);
 	};
 
+	// Handle search button click
+	const handleSearchClick = () => {
+		if (onSearch) {
+			onSearch(query); // Trigger the parent callback with the query
+		}
+	};
+
 	return (
 		<div className="max-w-md mx-auto mt-8">
-			<div className="relative">
+			<div className="relative flex items-center space-x-2">
 				<input
 					type="text"
 					placeholder="Search..."
@@ -75,20 +80,27 @@ const SearchBar = ({ suggestionsEnabled = true }) => {
 					onBlur={handleBlur}
 					className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
 				/>
-				{suggestionsEnabled && isFocused && suggestions.length > 0 && (
-					<div className="absolute w-full bg-white border border-gray-300 rounded-lg mt-1 shadow-lg z-10">
-						{suggestions.map((suggestion, index) => (
-							<div
-								key={index}
-								onClick={() => handleSuggestionClick(suggestion)}
-								className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-							>
-								{suggestion}
-							</div>
-						))}
-					</div>
-				)}
+				<button
+					onClick={handleSearchClick}
+					className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+				>
+					Search
+				</button>
 			</div>
+
+			{suggestionsEnabled && isFocused && suggestions.length > 0 && (
+				<div className="absolute bg-white border border-gray-300 rounded-lg mt-1 shadow-lg z-10">
+					{suggestions.map((suggestion, index) => (
+						<div
+							key={index}
+							onClick={() => handleSuggestionClick(suggestion)}
+							className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+						>
+							{suggestion}
+						</div>
+					))}
+				</div>
+			)}
 		</div>
 	);
 };
