@@ -1,13 +1,23 @@
 version: "3.8"
 services:
   mongodb:
-    image: mongodb/mongodb-community-server:latest
+    image: mongo:latest
     container_name: mongodb
     ports:
       - "27017:27017"
     volumes:
       - mongodb_data:/data/db
-    command: ["mongod", "--noauth"] # Disable authentication
+      - mongo_config:/data/configdb
+    command: ["--replSet", "rs0", "--bind_ip_all", "--port", "27017"] # disable auth
+    extra_hosts:
+      - "host.docker.internal:172.17.0.1"
+    healthcheck:
+      test: echo "try { rs.status() } catch (err) { rs.initiate({_id:'rs0',members:[{_id:0,host:'host.docker.internal:27017'}]}) }" | mongosh --port 27017 --quiet
+      interval: 5s
+      timeout: 30s
+      start_period: 0s
+      start_interval: 1s
+      retries: 30
     networks:
       - backend
 
@@ -33,11 +43,11 @@ services:
 
   backend:
     build:
-      context: ./backend # Point to the backend directory
-      dockerfile: Dockerfile # Specify the custom Dockerfile for the backend if required
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: backend
     environment:
-      - MONGO_URI=mongodb://mongodb:27017/questsearch
+      - MONGO_URI=mongodb://mongodb:27017/questsearch?directConnection=true
     ports:
       - "8787:8787"
     networks:
@@ -62,3 +72,5 @@ networks:
 
 volumes:
   mongodb_data:
+
+  mongo_config:
