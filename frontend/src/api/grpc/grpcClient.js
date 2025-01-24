@@ -6,9 +6,10 @@ const {
 
 var client = new QuestionServiceClient("http://localhost:8080");
 
-const getAllQuestions = async (page, limit) => {
+const getAllQuestions = async (qType, page, limit) => {
 	return new Promise((resolve, reject) => {
 		const request = new GetQuestionsRequest();
+		request.setQType(qType);
 		request.setPage(page);
 		request.setLimit(limit);
 
@@ -22,10 +23,11 @@ const getAllQuestions = async (page, limit) => {
 	});
 };
 
-const searchQuestions = async (query, page, limit) => {
+const searchQuestions = async (query, qType, page, limit) => {
 	return new Promise((resolve, reject) => {
 		const request = new SearchQuestionRequest();
 		request.setSearchTerm(query);
+		request.setQType(qType);
 		request.setPage(page);
 		request.setLimit(limit);
 

@@ -13,7 +13,7 @@ const App = () => {
 	const [currentPage, setCurrentPage] = useState(1);
 	const [totalPages, setTotalPages] = useState(1);
 	const [pageSize, setPageSize] = useState(10);
-	const [filter, setFilter] = useState("all"); // question type filter
+	const [filter, setFilter] = useState("ALL"); // question type filter
 
 	// searchModeOptions
 	const searchModeOptions = [
@@ -32,8 +32,8 @@ const App = () => {
 	];
 
 	// get questions from grpcClient
-	const fetchResults = async (query, page) => {
-		const results = await searchQuestions(query, page, 10);
+	const fetchResults = async (query, qType, page) => {
+		const results = await searchQuestions(query, qType, page, 10);
 
 		console.log("grpcClient resp", results);
 		setTotalPages(results.totalpages);
@@ -44,13 +44,13 @@ const App = () => {
 	// handle the search
 	const handleSearch = (query) => {
 		setSearchQuery(query);
-		fetchResults(query, 1);
+		fetchResults(query, filter, 1);
 	};
 
 	// handle page change
 	const handlePageChange = (page) => {
 		setCurrentPage(page);
-		fetchResults(searchQuery, page, filter); // Fetch again with the selected filter and page
+		fetchResults(searchQuery, filter, page); // Fetch again with the selected filter and page
 	};
 
 	return (

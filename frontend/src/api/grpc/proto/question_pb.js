@@ -1877,8 +1877,9 @@ proto.questions.GetQuestionsRequest.prototype.toObject = function(opt_includeIns
  */
 proto.questions.GetQuestionsRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
-page: jspb.Message.getFieldWithDefault(msg, 1, 0),
-limit: jspb.Message.getFieldWithDefault(msg, 2, 0)
+qType: jspb.Message.getFieldWithDefault(msg, 1, ""),
+page: jspb.Message.getFieldWithDefault(msg, 2, 0),
+limit: jspb.Message.getFieldWithDefault(msg, 3, 0)
   };
 
   if (includeInstance) {
@@ -1916,10 +1917,14 @@ proto.questions.GetQuestionsRequest.deserializeBinaryFromReader = function(msg, 
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setQType(value);
+      break;
+    case 2:
       var value = /** @type {number} */ (reader.readInt32());
       msg.setPage(value);
       break;
-    case 2:
+    case 3:
       var value = /** @type {number} */ (reader.readInt32());
       msg.setLimit(value);
       break;
@@ -1952,46 +1957,53 @@ proto.questions.GetQuestionsRequest.prototype.serializeBinary = function() {
  */
 proto.questions.GetQuestionsRequest.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getPage();
-  if (f !== 0) {
-    writer.writeInt32(
+  f = message.getQType();
+  if (f.length > 0) {
+    writer.writeString(
       1,
       f
     );
   }
-  f = message.getLimit();
+  f = message.getPage();
   if (f !== 0) {
     writer.writeInt32(
       2,
       f
     );
   }
+  f = message.getLimit();
+  if (f !== 0) {
+    writer.writeInt32(
+      3,
+      f
+    );
+  }
 };
 
 
 /**
- * optional int32 page = 1;
+ * optional string q_type = 1;
+ * @return {string}
+ */
+proto.questions.GetQuestionsRequest.prototype.getQType = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.questions.GetQuestionsRequest} returns this
+ */
+proto.questions.GetQuestionsRequest.prototype.setQType = function(value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+/**
+ * optional int32 page = 2;
  * @return {number}
  */
 proto.questions.GetQuestionsRequest.prototype.getPage = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.questions.GetQuestionsRequest} returns this
- */
-proto.questions.GetQuestionsRequest.prototype.setPage = function(value) {
-  return jspb.Message.setProto3IntField(this, 1, value);
-};
-
-
-/**
- * optional int32 limit = 2;
- * @return {number}
- */
-proto.questions.GetQuestionsRequest.prototype.getLimit = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
@@ -2000,8 +2012,26 @@ proto.questions.GetQuestionsRequest.prototype.getLimit = function() {
  * @param {number} value
  * @return {!proto.questions.GetQuestionsRequest} returns this
  */
-proto.questions.GetQuestionsRequest.prototype.setLimit = function(value) {
+proto.questions.GetQuestionsRequest.prototype.setPage = function(value) {
   return jspb.Message.setProto3IntField(this, 2, value);
+};
+
+
+/**
+ * optional int32 limit = 3;
+ * @return {number}
+ */
+proto.questions.GetQuestionsRequest.prototype.getLimit = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.questions.GetQuestionsRequest} returns this
+ */
+proto.questions.GetQuestionsRequest.prototype.setLimit = function(value) {
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
@@ -2539,8 +2569,9 @@ proto.questions.SearchQuestionRequest.prototype.toObject = function(opt_includeI
 proto.questions.SearchQuestionRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
 searchTerm: jspb.Message.getFieldWithDefault(msg, 1, ""),
-page: jspb.Message.getFieldWithDefault(msg, 2, 0),
-limit: jspb.Message.getFieldWithDefault(msg, 3, 0)
+qType: jspb.Message.getFieldWithDefault(msg, 2, ""),
+page: jspb.Message.getFieldWithDefault(msg, 3, 0),
+limit: jspb.Message.getFieldWithDefault(msg, 4, 0)
   };
 
   if (includeInstance) {
@@ -2582,10 +2613,14 @@ proto.questions.SearchQuestionRequest.deserializeBinaryFromReader = function(msg
       msg.setSearchTerm(value);
       break;
     case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setQType(value);
+      break;
+    case 3:
       var value = /** @type {number} */ (reader.readInt32());
       msg.setPage(value);
       break;
-    case 3:
+    case 4:
       var value = /** @type {number} */ (reader.readInt32());
       msg.setLimit(value);
       break;
@@ -2625,17 +2660,24 @@ proto.questions.SearchQuestionRequest.serializeBinaryToWriter = function(message
       f
     );
   }
+  f = message.getQType();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
   f = message.getPage();
   if (f !== 0) {
     writer.writeInt32(
-      2,
+      3,
       f
     );
   }
   f = message.getLimit();
   if (f !== 0) {
     writer.writeInt32(
-      3,
+      4,
       f
     );
   }
@@ -2661,28 +2703,28 @@ proto.questions.SearchQuestionRequest.prototype.setSearchTerm = function(value) 
 
 
 /**
- * optional int32 page = 2;
+ * optional string q_type = 2;
+ * @return {string}
+ */
+proto.questions.SearchQuestionRequest.prototype.getQType = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.questions.SearchQuestionRequest} returns this
+ */
+proto.questions.SearchQuestionRequest.prototype.setQType = function(value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+
+/**
+ * optional int32 page = 3;
  * @return {number}
  */
 proto.questions.SearchQuestionRequest.prototype.getPage = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.questions.SearchQuestionRequest} returns this
- */
-proto.questions.SearchQuestionRequest.prototype.setPage = function(value) {
-  return jspb.Message.setProto3IntField(this, 2, value);
-};
-
-
-/**
- * optional int32 limit = 3;
- * @return {number}
- */
-proto.questions.SearchQuestionRequest.prototype.getLimit = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
@@ -2691,8 +2733,26 @@ proto.questions.SearchQuestionRequest.prototype.getLimit = function() {
  * @param {number} value
  * @return {!proto.questions.SearchQuestionRequest} returns this
  */
-proto.questions.SearchQuestionRequest.prototype.setLimit = function(value) {
+proto.questions.SearchQuestionRequest.prototype.setPage = function(value) {
   return jspb.Message.setProto3IntField(this, 3, value);
+};
+
+
+/**
+ * optional int32 limit = 4;
+ * @return {number}
+ */
+proto.questions.SearchQuestionRequest.prototype.getLimit = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.questions.SearchQuestionRequest} returns this
+ */
+proto.questions.SearchQuestionRequest.prototype.setLimit = function(value) {
+  return jspb.Message.setProto3IntField(this, 4, value);
 };
 
 

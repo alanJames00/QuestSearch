@@ -7,15 +7,15 @@ option go_package = "./pb/question;question";
 
 // Block structure for Anagram Type questions
 message Block {
-        string text = 1;
-        bool show_in_option = 2;
-        bool is_answer = 3;
+	string text = 1;
+	bool show_in_option = 2;
+	bool is_answer = 3;
 }
 
 // Option structure for MCQ Type questions
 message Option {
-        string text = 1;
-        bool is_correct_answer = 2;
+	string text = 1;
+	bool is_correct_answer = 2;
 }
 
 // ContentOnly Question structure
@@ -27,27 +27,27 @@ message ConversationQuestion {
 
 message AnagramQuestion {
 
-        string anagram_type = 1;
-        repeated Block blocks = 2;
-        string solution = 3;
+	string anagram_type = 1;
+	repeated Block blocks = 2;
+	string solution = 3;
 }
 
 message MCQQuestion {
 
-        repeated Option options = 1;
+	repeated Option options = 1;	
 }
 
 message ReadAlongQuestion {
 }
 
 message Question{
-        string id = 1;
+	string id = 1;
     string type = 2;
     string title = 3;
     string sibling_id = 4;
 
 
-        oneof question_details {
+	oneof question_details {
         ContentOnlyQuestion content_only = 5;
         ConversationQuestion conversation = 6;
         AnagramQuestion anagram = 7;
@@ -57,39 +57,40 @@ message Question{
 }
 // Service defs
 service QuestionService {
-        // get all questions
-        rpc GetQuestions(GetQuestionsRequest) returns (GetQuestionsResponse);
+	// get all questions
+	rpc GetQuestions(GetQuestionsRequest) returns (GetQuestionsResponse);
 
-        // get a question by id
-        rpc GetQuestionById(GetQuestionByIdRequest) returns (GetQuestionByIdResponse);
+	// get a question by id
+	rpc GetQuestionById(GetQuestionByIdRequest) returns (GetQuestionByIdResponse);
 
-        // search a question with typo tolerance on title field
-        rpc SearchQuestion(SearchQuestionRequest) returns (GetQuestionsResponse);
+	// search a question with typo tolerance on title field
+	rpc SearchQuestion(SearchQuestionRequest) returns (GetQuestionsResponse);
 }
 
 // request to get questions
 message GetQuestionsRequest {
-        int32 page = 1;
-        int32 limit = 2;
+	string q_type = 1;
+	int32 page = 2;
+	int32 limit = 3;
 }
 
 message GetQuestionsResponse {
-        repeated Question questions = 1;
-        int32 totalQuestions = 2;
-        int32 totalPages = 3;
+	repeated Question questions = 1;
+	int32 totalQuestions = 2;
+	int32 totalPages = 3;
 }
 
 message GetQuestionByIdRequest {
-        string id = 1;
+	string id = 1;
 }
 
 message GetQuestionByIdResponse {
-        Question question = 1;
+	Question question = 1;
 }
 
 message SearchQuestionRequest {
-        string search_term = 1;
-        int32 page = 2;
-        int32 limit = 3;
+	string search_term = 1;
+	string q_type = 2;
+	int32 page = 3;
+	int32 limit = 4;
 }
-
