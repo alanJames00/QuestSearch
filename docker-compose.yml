@@ -36,7 +36,7 @@ services:
           sleep 2;
         done;
 
-        mongoimport --host mongodb --db=questsearch --collection=questions --file=/data/speakx_questions.json --jsonArray --stopOnError;
+        mongoimport --host mongodb --db=questsearch --collection=questions --file=/data/questions.json --jsonArray --stopOnError;
         exit 0;"
     networks:
       - backend
