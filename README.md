@@ -14,7 +14,7 @@ If these network ports are not available while starting the services, it will ca
 1. Run the following command inside the same directory as this README file is
 
 ```bash
-    docker compose up --build
+    docker compose up --build -d
 ```
 
 2. The entire setup is now automated, any fatal error will cause the setup to exit and show the causeof error on logs
