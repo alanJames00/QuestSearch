@@ -4,7 +4,7 @@ const {
 	SearchQuestionRequest,
 } = require("./proto/question_pb");
 
-var client = new QuestionServiceClient("http://localhost:8080");
+var client = new QuestionServiceClient(process.env.REACT_APP_GRPC_PROXY_HOST);
 
 const getAllQuestions = async (qType, page, limit) => {
 	return new Promise((resolve, reject) => {

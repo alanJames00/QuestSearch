@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@algolia/client-search": "^5.20.0",
     "@tailwindcss/cli": "^4.0.0",
+    "algoliasearch": "^5.20.0",
     "cra-template": "1.2.0",
     "google-protobuf": "^3.21.4",
     "grpc-web": "^1.5.0",

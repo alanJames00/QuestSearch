@@ -14,11 +14,12 @@ const App = () => {
 	const [totalPages, setTotalPages] = useState(1);
 	const [pageSize, setPageSize] = useState(10);
 	const [filter, setFilter] = useState("ALL"); // question type filter
+	const [loading, setLoading] = useState(false); // question loading state
 
 	// searchModeOptions
 	const searchModeOptions = [
-		{ value: "normal", label: "Normal DB Search" },
-		{ value: "suggested", label: "Elastic Search" },
+		{ value: "normal", label: "Simple DB Search" },
+		{ value: "suggested", label: "Algolia Search" },
 	];
 
 	// question type filters
@@ -33,12 +34,20 @@ const App = () => {
 
 	// get questions from grpcClient
 	const fetchResults = async (query, qType, page) => {
-		const results = await searchQuestions(query, qType, page, 10);
+		setLoading(true);
 
-		console.log("grpcClient resp", results);
-		setTotalPages(results.totalpages);
-		setCurrentPage(page);
-		setResults(results.questionsList);
+		try {
+			const results = await searchQuestions(query, qType, page, 10);
+			console.log("grpcClient resp", results);
+			setTotalPages(results.totalpages);
+			setCurrentPage(page);
+			setResults(results.questionsList);
+		} catch (err) {
+			console.log("Error fetching results", err);
+			alert("Error fetching results");
+		} finally {
+			setLoading(false);
+		}
 	};
 
 	// handle the search
@@ -55,22 +64,23 @@ const App = () => {
 
 	return (
 		<div className="min-h-screen bg-gray-100 p-8">
-			<h1 className="text-2xl font-bold text-center mb-8">
-				Search Bar with Suggestions
-			</h1>
+			<h1 className="text-2xl font-bold text-center mb-8">QuestSearch</h1>
 
-			<div className="flex justify-center mb-4 gap-4">
-				<Dropdown
-					options={searchModeOptions}
-					selectedValue={searchMode}
-					onChange={(e) => setSearchMode(e.target.value)}
-				/>
-
-				<Dropdown
-					options={questionTypeOptions}
-					selectedValue={filter}
-					onChange={(e) => setFilter(e.target.value)}
-				/>
+			<div className="flex flex-wrap justify-center mb-4 gap-4">
+				<div className="w-full sm:w-auto">
+					<Dropdown
+						options={searchModeOptions}
+						selectedValue={searchMode}
+						onChange={(e) => setSearchMode(e.target.value)}
+					/>
+				</div>
+				<div className="w-full sm:w-auto">
+					<Dropdown
+						options={questionTypeOptions}
+						selectedValue={filter}
+						onChange={(e) => setFilter(e.target.value)}
+					/>
+				</div>
 			</div>
 
 			<SearchBar
@@ -78,7 +88,13 @@ const App = () => {
 				onSearch={handleSearch}
 			/>
 
-			<SearchResults results={results} />
+			{loading ? (
+				<div className="text-center mt-4">
+					<span className="text-gray-600">Searching...</span>
+				</div>
+			) : (
+				<SearchResults results={results} />
+			)}
 
 			<div className="flex justify-center mt-8">
 				<Pagination

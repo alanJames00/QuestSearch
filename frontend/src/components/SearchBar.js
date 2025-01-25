@@ -1,34 +1,10 @@
 import React, { useState, useEffect } from "react";
+import { getSuggestions } from "../api/algolia/algoliaClient";
 
 const SearchBar = ({ suggestionsEnabled = true, onSearch }) => {
 	const [query, setQuery] = useState("");
 	const [suggestions, setSuggestions] = useState([]);
 	const [isFocused, setIsFocused] = useState(false);
-
-	const mockSuggestions = [
-		"React",
-		"JavaScript",
-		"Tailwind CSS",
-		"Node.js",
-		"Python",
-		"Django",
-		"Flask",
-		"Vue.js",
-		"Angular",
-		"Svelte",
-	];
-
-	const fetchSuggestions = (query) => {
-		return new Promise((resolve) => {
-			setTimeout(() => {
-				resolve(
-					mockSuggestions.filter((suggestion) =>
-						suggestion.toLowerCase().includes(query.toLowerCase()),
-					),
-				);
-			}, 300);
-		});
-	};
 
 	// Handle input change
 	const handleInputChange = async (e) => {
@@ -36,7 +12,8 @@ const SearchBar = ({ suggestionsEnabled = true, onSearch }) => {
 		setQuery(value);
 
 		if (suggestionsEnabled && value.trim()) {
-			const filteredSuggestions = await fetchSuggestions(value);
+			const filteredSuggestions = await getSuggestions(value, "ALL");
+			console.log("filteredSuggestions", filteredSuggestions);
 			setSuggestions(filteredSuggestions);
 		} else {
 			setSuggestions([]);
@@ -69,8 +46,8 @@ const SearchBar = ({ suggestionsEnabled = true, onSearch }) => {
 	};
 
 	return (
-		<div className="max-w-md mx-auto mt-8">
-			<div className="relative flex items-center space-x-2">
+		<div className="max-w-md mx-auto mt-8 px-4 sm:px-0">
+			<div className="relative flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-2">
 				<input
 					type="text"
 					placeholder="Search..."
@@ -78,19 +55,19 @@ const SearchBar = ({ suggestionsEnabled = true, onSearch }) => {
 					onChange={handleInputChange}
 					onFocus={handleFocus}
 					onBlur={handleBlur}
-					className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+					className="w-full sm:w-auto flex-1 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
 				/>
 				<button
 					onClick={handleSearchClick}
-					className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+					className="w-full sm:w-auto px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
 				>
-					Search
+					{query.length > 0 ? "Search" : "Show All"}
 				</button>
 			</div>
 
 			{suggestionsEnabled && isFocused && suggestions.length > 0 && (
-				<div className="absolute bg-white border border-gray-300 rounded-lg mt-1 shadow-lg z-10">
-					{suggestions.map((suggestion, index) => (
+				<div className="absolute left-0 right-0 bg-white border border-gray-300 rounded-lg mt-2 shadow-lg z-10 max-h-48 overflow-auto">
+					{suggestions.slice(0, 5).map((suggestion, index) => (
 						<div
 							key={index}
 							onClick={() => handleSuggestionClick(suggestion)}
