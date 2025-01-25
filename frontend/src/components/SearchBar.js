@@ -67,7 +67,7 @@ const SearchBar = ({ suggestionsEnabled = true, onSearch }) => {
 
 			{suggestionsEnabled && isFocused && suggestions.length > 0 && (
 				<div className="absolute left-0 right-0 bg-white border border-gray-300 rounded-lg mt-2 shadow-lg z-10 max-h-48 overflow-auto">
-					{suggestions.slice(0, 5).map((suggestion, index) => (
+					{suggestions.slice(0, 10).map((suggestion, index) => (
 						<div
 							key={index}
 							onClick={() => handleSuggestionClick(suggestion)}

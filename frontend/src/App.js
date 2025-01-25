@@ -15,6 +15,7 @@ const App = () => {
 	const [pageSize, setPageSize] = useState(10);
 	const [filter, setFilter] = useState("ALL"); // question type filter
 	const [loading, setLoading] = useState(false); // question loading state
+	const [totalResults, setTotalResults] = useState(0);
 
 	// searchModeOptions
 	const searchModeOptions = [
@@ -41,6 +42,7 @@ const App = () => {
 			console.log("grpcClient resp", results);
 			setTotalPages(results.totalpages);
 			setCurrentPage(page);
+			setTotalResults(results.totalquestions);
 			setResults(results.questionsList);
 		} catch (err) {
 			console.log("Error fetching results", err);
@@ -87,6 +89,15 @@ const App = () => {
 				suggestionsEnabled={searchMode === "suggested"}
 				onSearch={handleSearch}
 			/>
+
+			{/* Show the number of results */}
+			{!loading && results.length > 0 && (
+				<div className="text-center mt-4 text-gray-700">
+					<span>
+						{totalResults} result{results.length > 1 ? "s" : ""} found
+					</span>
+				</div>
+			)}
 
 			{loading ? (
 				<div className="text-center mt-4">
