@@ -69,3 +69,11 @@ If docker service is not available, then follow your operating system specific i
 - Envoy proxy is used to proxy the grpc requests to the grpc server
 - The frontend is built using ReactJS
 - Backend is built using GoLang
+
+## Screenshots
+
+![Alt text](https://github.com/alanJames00/QuestSearch/blob/master/screenshots/screenshot_1.png)
+
+![Alt text](https://github.com/alanJames00/QuestSearch/blob/master/screenshots/screenshot_2.png)
+
+![Alt text](https://github.com/alanJames00/QuestSearch/blob/master/screenshots/screenshot_3.png)
